@@ -73,7 +73,7 @@ def build_scene(info : dict):
     return scene
 
 if __name__ == "__main__":
-    cone = load_json('./V1_inputs/japan.json')
+    cone = load_json('./V1_inputs/eye.json')
     print(cone)
 
     scene = build_scene(cone)
