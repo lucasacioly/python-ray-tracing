@@ -1,5 +1,6 @@
 from basic_geom import Point, Vector3, Color
 import numpy as np
+from cmath import nan
 
 class Sphere:
 
@@ -55,5 +56,33 @@ class Plane:
         self.point = point
         self.normal = normal
 
-    def intersection(self):
-        return None
+    def intersection(self, ray_origin : Point, ray_direction : Vector3):
+        #forma escalar = a(x-x0) + b(y-y0) + c(z-z0) = 0
+        #normal = (a,b,c)
+        #point = (x0,y0,z0)
+        #transforma a forma da reta para:
+        #x = f + α*T
+        #y = h + β*T
+        #z = g + γ*T
+        #logo:
+        #a((f + α*T)-x0) + b((h + β*T)-y0) + c((g + γ*T)-z0) = 0
+        #T = (a*f - a*x0 + b*h - b*y0 + c*g - c*z0)/(-a*α - b*β - c*γ)
+        a = self.normal.vector[0]
+        b = self.normal.vector[1]
+        c = self.normal.vector[2]
+        x0 = self.point.vector[0]
+        y0 = self.point.vector[1]
+        z0 = self.point.vector[2]
+        alpha = ray_direction.vector[0]
+        beta = ray_direction.vector[1]
+        gama = ray_direction.vector[2]
+        f = ray_origin.vector[0]
+        h = ray_origin.vector[1]
+        g = ray_origin.vector[2]
+
+        T = float((a*f - a*x0 + b*h - b*y0 + c*g - c*z0)/(-a*alpha - b*beta - c*gama))
+
+        if(not np.isnan(T) and T>=0):
+            return T
+        else:
+            return None
