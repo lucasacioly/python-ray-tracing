@@ -1,5 +1,6 @@
 *.png
 **/teste.py
+**/inspiration.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
