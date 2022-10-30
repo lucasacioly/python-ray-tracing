@@ -73,7 +73,7 @@ def build_scene(info : dict):
     return scene
 
 if __name__ == "__main__":
-    cone = load_json('./V1_inputs/eye.json')
+    cone = load_json('./V1_inputs/cone.json')
     print(cone)
 
     scene = build_scene(cone)
@@ -99,5 +99,5 @@ if __name__ == "__main__":
 
     img = gnt.trace_img(scene)
     print('ok')
-    gnt.save_img('testando', img)
+    gnt.save_img('cone', img)
 
