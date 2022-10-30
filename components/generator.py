@@ -82,7 +82,7 @@ def trace_img(scene: Scene):
             nearest_object, min_distance = nearest_intersected_object(scene.obj_list, origin, direction)
             #print(nearest_object)
             # compute intersection point between ray and nearest object
-            intersection = origin.vector + min_distance * direction.vector
+            #intersection = origin.vector + min_distance * direction.vector
             if(nearest_object is not None):
                 image[i, j] = np.clip(nearest_object.color.vector, 0, 1)
             else:

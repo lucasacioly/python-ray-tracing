@@ -43,9 +43,9 @@ def detect_object(object : dict):
         new_obj = objects.Plane(color, point, normal)
     elif "triangle" in object:
         triangle = object["triangle"]
-        p1 = Point(*triangle[0])
-        p2 = Point(*triangle[1])
-        p3 = Point(*triangle[2])
+        p1 = triangle[0]
+        p2 = triangle[1]
+        p3 = triangle[2]
         new_obj = objects.Triangle(color, p1, p2, p3)
     
     return new_obj
@@ -73,7 +73,7 @@ def build_scene(info : dict):
     return scene
 
 if __name__ == "__main__":
-    cone = load_json('./V1_inputs/eye.json')
+    cone = load_json('./V1_inputs/ilands.json')
     print(cone)
 
     scene = build_scene(cone)
