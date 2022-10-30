@@ -7,6 +7,10 @@ a = np.array([1, 2, 3])
 b = np.array([3, 3, 3])
 
 c = Vector3(*(a - b))
-c.normalize()
+#c.normalize()
 
-print(c.vector)
+d = np.subtract(a,b)
+
+print(-c.vector)
+
+print(d)

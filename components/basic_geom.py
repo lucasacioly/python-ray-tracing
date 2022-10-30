@@ -1,5 +1,3 @@
-from msilib.schema import Class
-from turtle import onclick
 import numpy as np 
 
 class Vector3:

@@ -1,13 +1,12 @@
 from basic_geom import Point, Vector3, Color
 import numpy as np
-from cmath import nan
 
 class Sphere:
 
-    kind = 'sphere'
-    color = None
-    center = None
-    radius = None
+    kind : str = 'sphere'
+    color : Color = None
+    center : Point = None
+    radius : float = None
     
     def __init__(self, color: Color, center:Point, radius:float):
         self.color = color
@@ -29,8 +28,8 @@ class Sphere:
 
 class Triangle:
 
-    kind = 'triangle'
-    color = None
+    kind : str = 'triangle'
+    color : Color = None
     T1 = None
     T2 = None
     T3 = None
@@ -62,7 +61,7 @@ class Triangle:
         #multiplica esses danados
         self.normal = np.cross(vector1,vector2)
         self.point = self.T1
-        self.min_x = min(a[0],b[0],c[0]) - 0.01#ajusta pois a computacao he uma ciencia imperfeita
+        self.min_x = min(a[0],b[0],c[0]) - 0.01#ajusta pois a computacao eh uma ciencia imperfeita
         self.min_y = min(a[1],b[1],c[1]) - 0.01
         self.min_z = min(a[2],b[2],c[2]) - 0.01
         self.max_x = max(a[0],b[0],c[0]) + 0.01
@@ -126,10 +125,10 @@ class Triangle:
 
 class Plane:
 
-    kind = 'plane'
-    color = None
-    point = None
-    normal = None
+    kind : str = 'plane'
+    color : Color = None
+    point : Point = None
+    normal : Vector3 = None
 
     def __init__(self, color: Color, point:Point, normal:Vector3):
         self.color = color
@@ -159,7 +158,7 @@ class Plane:
         f = ray_origin.vector[0]
         h = ray_origin.vector[1]
         g = ray_origin.vector[2]
-
+        
         T = float((a*f - a*x0 + b*h - b*y0 + c*g - c*z0)/(-a*alpha - b*beta - c*gama))
 
         if(not np.isnan(T) and T>=0):
