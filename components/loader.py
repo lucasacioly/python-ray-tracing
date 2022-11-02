@@ -4,6 +4,8 @@ import objects
 from basic_geom import Color, Point, Vector3
 import numpy as np
 import generator as gnt
+from light import Light
+from material import Material
 
 def load_json(path : str):
 
@@ -20,6 +22,8 @@ def load_json(path : str):
         "cam_up": tuple(info["up"]),
         "bg_color": tuple(info["background_color"]),
         "objects": info["objects"],
+        "ambient_light" : info["ambient_light"],
+        "lights": tuple(info["lights"])
     }
 
     return info
@@ -29,24 +33,28 @@ def detect_object(object : dict):
     
     new_obj = None
 
-    color = Color(*object["color"])
+    material = Material(Color(*object["color"]),
+                        object["ka"],
+                        object["kd"],
+                        object["ks"],
+                        object["exp"])
 
     if "sphere" in object:
         sphere = object["sphere"]
         center = Point(*sphere["center"])
         radius = sphere["radius"]
-        new_obj = objects.Sphere(color, center, radius)
+        new_obj = objects.Sphere(center, radius, material)
     elif "plane" in object:
         plane = object["plane"]
         point = Point(*plane["sample"])
         normal = Vector3(*plane["normal"])
-        new_obj = objects.Plane(color, point, normal)
+        new_obj = objects.Plane(point, normal, material)
     elif "triangle" in object:
         triangle = object["triangle"]
         p1 = Point(*triangle[0])
         p2 = Point(*triangle[1])
         p3 = Point(*triangle[2])
-        new_obj = objects.Triangle(color, p1, p2, p3)
+        new_obj = objects.Triangle(p1, p2, p3, material)
     
     return new_obj
 
@@ -58,6 +66,11 @@ def build_scene(info : dict):
         new_obj = detect_object(obj)
         objts.append(new_obj)
 
+    lights = []
+
+    for light in info["lights"]:
+        lights.append(Light(Point(*light["position"]), Color(*light["intensity"])))
+
     scene = Scene(
         width = info["width"],
         height = info["height"],
@@ -67,37 +80,33 @@ def build_scene(info : dict):
         cam_look_at = Point(*info["cam_look_at"]),
         cam_up = Vector3(*info["cam_up"]),
         bg_color = Color(*info["bg_color"]),
-        obj_list = objts
+        obj_list = objts,
+        ambient_light = Color(*info["ambient_light"]),
+        lights = lights
     )
 
     return scene
 
 if __name__ == "__main__":
-    cone = load_json('./V1_inputs/cone.json')
-    print(cone)
+    eclipse = load_json('./V2_inputs/diamante.json')
+    print(eclipse)
 
-    scene = build_scene(cone)
-
-    
-    print('\n--------------------------------\n')
-    print(scene.width, '1\n')
-    print(scene.height,  '2\n')
-    print(scene.bg_color.vector, '3\n')
-    print(scene.cam_pixel_size,  '3\n')
-    print(scene.cam_focus_dist, '4\n')
-    print(scene.cam_eye.vector,  '5\n')
-    print(scene.cam_look_at.vector,  '6\n')
-    print(scene.cam_up.vector,  '7\n')
+    scene = build_scene(eclipse)
+    print('ok')
+    print(scene.width)
+    print(scene.height)
+    print(scene.cam_pixel_size)
+    print(scene.cam_focus_dist)
+    print(scene.cam_eye.vector)
+    print(scene.cam_look_at.vector)
+    print(scene.cam_up.vector)
+    print(scene.bg_color.vector)
     for obj in scene.obj_list:
-        print(type(obj),   '8\n'    )
-
-    print('\n--------------------------------\n')
-
-    c = np.zeros((2, 4, 3))
-
-    print(c)
+        print(obj)
+    print(scene.ambient_light.vector)
+    for light in scene.lights:
+        print(light)
 
     img = gnt.trace_img(scene)
-    print('ok')
-    gnt.save_img('cone', img)
+    gnt.save_img('diamante1', img)
 

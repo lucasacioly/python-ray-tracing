@@ -1,15 +1,31 @@
 from basic_geom import Point, Vector3, Color
 import numpy as np
+from material import Material
 
-class Sphere:
+class Object:
+    material : Material = None
+
+    def __init__(self, material : Material):
+        self.material = material
+
+    def intersection(self, ray_origin : Point, ray_direction : Vector3):
+        pass
+
+    def get_color(self):
+        return self.material.get_color()
+
+    def get_normal(self, surface_point: Point):
+        # Returns the normal of the Object surface in a given point
+        pass
+
+class Sphere(Object):
 
     kind : str = 'sphere'
-    color : Color = None
     center : Point = None
     radius : float = None
     
-    def __init__(self, color: Color, center:Point, radius:float):
-        self.color = color
+    def __init__(self, center:Point, radius:float, material:Material):
+        super().__init__(material)
         self.center = center
         self.radius = radius
 
@@ -25,11 +41,18 @@ class Sphere:
             if t1 > 0 and t2 > 0:
                 return min(t1, t2)
         return None
+    
+    def get_normal(self, surface_point : np.array):
+        v = Vector3(0,0,0)
+        v.vector = ((surface_point-self.center.vector))
+        v.normalize()
+        return v
 
-class Triangle:
+
+
+class Triangle(Object):
 
     kind : str = 'triangle'
-    color : Color = None
     T1 : Point = None
     T2 : Point = None
     T3 : Point = None
@@ -42,8 +65,8 @@ class Triangle:
     #hitbox
     min_x,max_x,min_y,max_y,min_z,max_z = 0,0,0,0,0,0
 
-    def __init__(self,color : Color, a:Point, b:Point, c:Point):
-        self.color = color
+    def __init__(self, a:Point, b:Point, c:Point, material: Material):
+        super().__init__(material)
         self.T1 = a
         self.T2 = b
         self.T3 = c
@@ -129,18 +152,24 @@ class Triangle:
         else:   
             return None
         return None
+    
+    def get_normal(self, surface_point : Point):
+        norm = self.normal
+        norm.normalize()
+        return norm
 
-class Plane:
+
+class Plane(Object):
 
     kind : str = 'plane'
-    color : Color = None
     point : Point = None
     normal : Vector3 = None
 
-    def __init__(self, color: Color, point:Point, normal:Vector3):
-        self.color = color
+    def __init__(self, point:Point, normal:Vector3, material: Material):
+        super().__init__(material)
         self.point = point
-        self.normal = normal
+        self.normal = normal 
+        self.normal.normalize() # isso não estava no original, pode dar pau
 
     def intersection(self, ray_origin : Point, ray_direction : Vector3):
         #scalar form = a(x-x0) + b(y-y0) + c(z-z0) = 0
@@ -172,3 +201,12 @@ class Plane:
             return T
         else:
             return None
+    
+    def get_normal(self, surface_point : Point):
+        return self.normal
+
+
+if __name__ == '__main__':
+    T = Triangle(Point(0,0,0), Point(5,5,5), Point(7, 3, 9), Material(color=Color(0,0,0)))
+    norm = T.normal
+    print(norm.vector)

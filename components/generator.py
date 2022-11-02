@@ -1,11 +1,12 @@
-import numpy as np
-from objects import Sphere
-from scene import Scene
-from basic_geom import Vector3, Point
-import matplotlib.pyplot as plt
 import random
+import numpy as np
+from objects import Object
+from scene import Scene
+from basic_geom import Vector3, Point, Color
+import matplotlib.pyplot as plt
+from light import Light
 
-def nearest_intersected_object(objects :list[Sphere], ray_origin : Point, ray_direction : Vector3):
+def nearest_intersected_object(objects :list[Object], ray_origin : Point, ray_direction : Vector3):
     distances = [obj.intersection(ray_origin, ray_direction) for obj in objects]
     nearest_object = None
     min_distance = np.inf
@@ -89,14 +90,69 @@ def trace_img(scene: Scene):
             origin = Vector3(cam_pos.vector[0],cam_pos.vector[1],cam_pos.vector[2])
             direction = Vector3(*(pixel.vector - origin.vector))
             direction.normalize()
+
             nearest_object, min_distance = nearest_intersected_object(scene.obj_list, origin, direction)
-            #print(nearest_object)
-            # compute intersection point between ray and nearest object
-            #intersection = origin.vector + min_distance * direction.vector
-            if(nearest_object is not None):
-                image[i, j] = np.clip(nearest_object.color.vector, 0, 1)
+
+            if(nearest_object is None):
+                image[i, j] = scene.bg_color.vector        
+
             else:
-                image[i, j] = scene.bg_color.vector
+                color = Color(0,0,0)
+                # compute intersection point between ray and nearest object
+                intersection = origin.vector + min_distance * direction.vector
+                
+                #get normal vector of the hitted object at the hitted point
+                hit_normal = nearest_object.get_normal(intersection)
+
+                #get direction to camera
+                dir_to_camera = Vector3(0,0,0)
+                dir_to_camera.vector = scene.cam_eye.vector - intersection
+                dir_to_camera.normalize()
+                
+                # Ambient
+                obj_color = nearest_object.material.get_color()
+                color.vector = nearest_object.material.ka * np.multiply(obj_color, scene.ambient_light.vector)
+
+                for light in scene.lights:
+
+                    # correct intersectio to avoid shadow acne
+                    shifted_intersection = Point(0,0,0)
+                    shifted_intersection.vector = intersection + 1e-5 * hit_normal.vector
+
+                    #get direction to light
+                    dir_to_light = Vector3(0,0,0)
+                    dir_to_light.vector = light.get_position() - shifted_intersection.vector
+                    dir_to_light.normalize()
+
+                    hit_obj, min_distance = nearest_intersected_object(scene.obj_list, shifted_intersection, dir_to_light)
+                    light_intersec_dist = np.dot(dir_to_light.vector, (light.get_position() - shifted_intersection.vector))
+
+                    if (hit_obj != None) and (0 < min_distance < light_intersec_dist):
+                        continue
+
+                    # Diffuse shading
+                    color.vector += (
+                            np.multiply(obj_color, light.get_color())
+                            * nearest_object.material.kd
+                            * max(np.dot(hit_normal.vector, dir_to_light.vector), 0))
+                    
+
+                    # Specular shading
+                    half_vector = Vector3(0,0,0)
+                    half_vector.vector = (dir_to_light.vector + dir_to_camera.vector)
+                    #half_vector.vector = 2*np.dot(dir_to_light.vector, hit_normal.vector) * hit_normal.vector - dir_to_light.vector
+                    half_vector.normalize()
+
+                    
+                    color.vector += (
+                    light.get_color()
+                    * nearest_object.material.ks
+                    * max(np.dot(hit_normal.vector, half_vector.vector), 0) ** nearest_object.material.phong_exp)
+                    #* max(np.dot(half_vector.vector, dir_to_camera.vector),0))
+
+                image[i, j] = np.clip(color.vector, 0, 1)
+
+                
         print("progress: %d/%d" % (i + 1, height))
     return image
 
