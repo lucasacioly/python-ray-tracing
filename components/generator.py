@@ -136,20 +136,18 @@ def trace_img(scene: Scene):
                             * nearest_object.material.kd
                             * max(np.dot(hit_normal.vector, dir_to_light.vector), 0))
                     
-
+            
                     # Specular shading
                     half_vector = Vector3(0,0,0)
-                    half_vector.vector = (dir_to_light.vector + dir_to_camera.vector)
-                    #half_vector.vector = 2*np.dot(dir_to_light.vector, hit_normal.vector) * hit_normal.vector - dir_to_light.vector
+                    half_vector.vector = -dir_to_light.vector - 2*np.dot(-dir_to_light.vector, hit_normal.vector)*hit_normal.vector
                     half_vector.normalize()
-
                     
                     color.vector += (
                     light.get_color()
                     * nearest_object.material.ks
-                    * max(np.dot(hit_normal.vector, half_vector.vector), 0) ** nearest_object.material.phong_exp)
-                    #* max(np.dot(half_vector.vector, dir_to_camera.vector),0))
+                    * (max(np.dot(dir_to_camera.vector, half_vector.vector), 0) ** nearest_object.material.phong_exp))
 
+                color.vector = color.vector/(max(1,color.vector[0],color.vector[1],color.vector[2]))
                 image[i, j] = np.clip(color.vector, 0, 1)
 
                 
