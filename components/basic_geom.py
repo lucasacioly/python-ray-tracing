@@ -16,3 +16,6 @@ class Color(Vector3):
     
     def __init__(self, x, y, z):
         self.vector = np.array([float(x)/255, float(y)/255, float(z)/255])
+
+    def normalize(self):
+        self.vector = self.vector/max(1, *self.vector)
