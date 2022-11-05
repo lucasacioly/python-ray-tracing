@@ -88,7 +88,7 @@ def build_scene(info : dict):
     return scene
 
 if __name__ == "__main__":
-    eclipse = load_json('./V2_inputs/diamante.json')
+    eclipse = load_json('./V2_inputs/queijo.json')
     print(eclipse)
 
     scene = build_scene(eclipse)
@@ -108,5 +108,5 @@ if __name__ == "__main__":
         print(light)
 
     img = gnt.trace_img(scene)
-    gnt.save_img('diamante2', img)
+    gnt.save_img('./outputs/queijo1', img)
 

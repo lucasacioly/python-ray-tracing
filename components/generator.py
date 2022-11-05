@@ -18,8 +18,7 @@ def nearest_intersected_object(objects :list[Object], ray_origin : Point, ray_di
 
 def get_dir_camera(scene: Scene, cam_dir : Point, cam_pos : Point):
     #descobre o vetor mira 
-    mira = Vector3(0,0,0)
-    mira.vector = cam_dir.vector-cam_pos.vector 
+    mira = Vector3(*(cam_dir.vector-cam_pos.vector))
     #normaliza ele
     n_mira = mira
     n_mira.normalize()
@@ -34,14 +33,13 @@ def get_dir_camera(scene: Scene, cam_dir : Point, cam_pos : Point):
 
     else:#se ele for zero quer dizer que os vetores tem o mesmo sentido 
         #por hora vou tirar na sorte para onde deveria ser o up
-        up = Vector3(random.random(), random.random(), random.random())
+        up = Vector3(*[random.random() for i in range(3)])
         p_up.vector = np.array(up.vector - (np.dot(up.vector, n_mira.vector) / np.dot(n_mira.vector, n_mira.vector)) * n_mira.vector)
         n_up = p_up
         n_up.normalize()
 
     #calcula o terceiro (n_side) vetor
-    side = Vector3(0,0,0)
-    side.vector = np.cross(n_mira.vector,n_up.vector)
+    side = Vector3(*np.cross(n_mira.vector,n_up.vector))
     #normaliza ele e coloca do lado certo
     n_side = side 
     n_side.normalize()
@@ -57,7 +55,9 @@ def get_dir_camera(scene: Scene, cam_dir : Point, cam_pos : Point):
 
     return n_side,n_mira,n_up
 
-def colorize(image, scene, min_distance, nearest_object, origin, direction):
+def colorize(scene : Scene, origin, direction):
+    nearest_object, min_distance = nearest_intersected_object(scene.obj_list, origin, direction)
+
     if(nearest_object is None):
         return scene.bg_color.vector        
 
@@ -70,8 +70,7 @@ def colorize(image, scene, min_distance, nearest_object, origin, direction):
         hit_normal = nearest_object.get_normal(intersection)
 
         #get direction to camera
-        dir_to_camera = Vector3(0,0,0)
-        dir_to_camera.vector = scene.cam_eye.vector - intersection
+        dir_to_camera = Vector3(*(scene.cam_eye.vector - intersection))
         dir_to_camera.normalize()
 
         # Ambient
@@ -85,8 +84,7 @@ def colorize(image, scene, min_distance, nearest_object, origin, direction):
             shifted_intersection.vector = intersection + 1e-5 * hit_normal.vector
 
             #get direction to light
-            dir_to_light = Vector3(0,0,0)
-            dir_to_light.vector = light.get_position() - shifted_intersection.vector
+            dir_to_light = Vector3(*(light.get_position() - shifted_intersection.vector))
             dir_to_light.normalize()
 
             hit_obj, min_distance = nearest_intersected_object(scene.obj_list, shifted_intersection, dir_to_light)
@@ -145,15 +143,13 @@ def trace_img(scene: Scene):
         ponto_atual.vector = ponto_inicial.vector - n_up.vector*i
         for j in range(width-1):
             ponto_atual.vector -=  n_side.vector
-            pixel = Vector3(ponto_atual.vector[0],ponto_atual.vector[1],ponto_atual.vector[2])
+            pixel = Vector3(*ponto_atual.vector)
 
-            origin = Vector3(cam_pos.vector[0],cam_pos.vector[1],cam_pos.vector[2])
+            origin = Point(*cam_pos.vector)
             direction = Vector3(*(pixel.vector - origin.vector))
             direction.normalize()
-
-            nearest_object, min_distance = nearest_intersected_object(scene.obj_list, origin, direction)
             
-            image[i, j] = colorize(image, scene, min_distance, nearest_object, origin, direction)
+            image[i, j] = colorize(scene, origin, direction)
 
                 
         print("progress: %d/%d" % (i + 1, height))
