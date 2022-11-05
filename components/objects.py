@@ -14,6 +14,15 @@ class Object:
     def get_color(self):
         return self.material.get_color()
 
+    def get_kt(self):
+        return self.material.get_kt()
+    
+    def get_kr(self):
+        return self.material.get_kr()
+    
+    def get_refraction_idx(self):
+        return self.material.get_refraction_idx()
+
     def get_normal(self, surface_point: Point):
         # Returns the normal of the Object surface in a given point
         pass

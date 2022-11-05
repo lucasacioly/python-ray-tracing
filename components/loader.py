@@ -23,7 +23,8 @@ def load_json(path : str):
         "bg_color": tuple(info["background_color"]),
         "objects": info["objects"],
         "ambient_light" : info["ambient_light"],
-        "lights": tuple(info["lights"])
+        "lights": tuple(info["lights"]),
+        "max_depth": info["max_depth"]
     }
 
     return info
@@ -37,7 +38,10 @@ def detect_object(object : dict):
                         object["ka"],
                         object["kd"],
                         object["ks"],
-                        object["exp"])
+                        object["exp"],
+                        object["kr"],
+                        object["kt"],
+                        object["index_of_refraction"])
 
     if "sphere" in object:
         sphere = object["sphere"]
@@ -82,7 +86,8 @@ def build_scene(info : dict):
         bg_color = Color(*info["bg_color"]),
         obj_list = objts,
         ambient_light = Color(*info["ambient_light"]),
-        lights = lights
+        lights = lights,
+        max_depth = info["max_depth"]
     )
 
     return scene

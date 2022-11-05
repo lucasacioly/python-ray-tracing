@@ -29,4 +29,12 @@ class Material:
     def get_color(self):
         return self.color.vector
     
+    def get_kt(self): 
+        return self.kt
+    
+    def get_kr(self): 
+        return self.kr
+    
+    def get_refraction_idx(self): 
+        return self.refract_idx
     
