@@ -142,7 +142,7 @@ class Triangle(Object):
 
 
         T = float((a*f - a*x0 + b*h - b*y0 + c*g - c*z0)/(-a*alpha - b*beta - c*gama))
-        if(not np.isnan(T)):#test if is the triangle plane
+        if(not np.isnan(T) and T > 0):#test if is the triangle plane
             #try to get the point where the rect intersects the plane
             P = (ray_direction.vector*T + ray_origin.vector)
             if self.min_x<=P[0]<=self.max_x and \
@@ -206,7 +206,7 @@ class Plane(Object):
 
         T = float((a*f - a*x0 + b*h - b*y0 + c*g - c*z0)/(-a*alpha - b*beta - c*gama))
 
-        if(not np.isnan(T) and T>=0):
+        if(not np.isnan(T) and T>0):
             return T
         else:
             return None

@@ -58,8 +58,8 @@ def get_dir_camera(scene: Scene, cam_dir : Point, cam_pos : Point):
     return n_side,n_mira,n_up
 
 
-def reflect():
-    return None
+def reflect(dir_to_light : Vector3, normal : Vector3):
+    return Vector3(*(-dir_to_light.vector + 2*np.dot(dir_to_light.vector, normal.vector)*normal.vector ))
 
 
 def refract(object : Object, direction : Vector3, normal : Vector3):
@@ -82,11 +82,11 @@ def refract(object : Object, direction : Vector3, normal : Vector3):
     return -(direction/refract_idx) - (sqrt(var) - cos/refract_idx)*new_normal
 
 
-def colorize(scene : Scene, ray_origin : Point, ray_direction : Vector3, ttl : int):
+def colorize(scene : Scene, ray_origin : Point, ray_direction : Vector3, ttl : int, i, j):
     nearest_object, min_distance = nearest_intersected_object(scene.obj_list, ray_origin, ray_direction)
 
     if(nearest_object is None):
-        return scene.bg_color.vector        
+        return scene.bg_color.vector       
 
     else:
         color = Color(0,0,0)
@@ -97,7 +97,7 @@ def colorize(scene : Scene, ray_origin : Point, ray_direction : Vector3, ttl : i
         hit_normal = nearest_object.get_normal(intersection)
 
         #get direction to camera
-        dir_to_camera = Vector3(*(scene.cam_eye.vector - intersection))
+        dir_to_camera = Vector3(*(ray_origin.vector - intersection))
         dir_to_camera.normalize()
 
         # Ambient
@@ -138,25 +138,31 @@ def colorize(scene : Scene, ray_origin : Point, ray_direction : Vector3, ttl : i
             * (max(np.dot(dir_to_camera.vector, half_vector.vector), 0) ** nearest_object.material.phong_exp))
         
         if ttl > 0:
-            reflect_dir = reflect()
+            if (j == scene.width/2 and i == scene.height/3):
+                x = 1
+                color.vector *= 1
+
+            reflected_ray_dir = Vector3(*(-ray_direction.vector))
+            reflect_dir = reflect(reflected_ray_dir, hit_normal)
             shift_reflect_intersect = Point(*(intersection + 1e-5 * reflect_dir.vector))
 
             kt = nearest_object.get_kt()
             kr = nearest_object.get_kr()
-
+            
+            new_ttl = ttl - 1
             try:
                 if kt > 0:
-                    refract_dir = refract()
+                    refract_dir = refract(nearest_object, reflected_ray_dir, hit_normal)
                     shift_refract_intersect = Point(*(intersection + 1e-5 * refract_dir.vector))
-                    color.vector += kr*colorize(scene, shift_refract_intersect, refract_dir, ttl-1)
+                    color.vector += kr*colorize(scene, shift_refract_intersect, refract_dir, new_ttl, i, j)
 
                 if kr > 0:
-                    color.vector += kr*colorize(scene, shift_reflect_intersect, reflect_dir, ttl-1)
+                    color.vector += kr*colorize(scene, shift_reflect_intersect, reflect_dir, new_ttl, i, j)
             
             except:
-                color.vector += colorize(scene, shift_reflect_intersect, reflect_dir, ttl-1)
-        else:
-            return color.vector
+                color.vector += colorize(scene, shift_reflect_intersect, reflect_dir, new_ttl, i, j)
+        
+        return color.vector
 
 
 def trace_img(scene: Scene):
@@ -190,6 +196,8 @@ def trace_img(scene: Scene):
         #get current y position
         ponto_atual.vector = ponto_inicial.vector - n_up.vector*i
         for j in range(width-1):
+
+            
             ponto_atual.vector -=  n_side.vector
             pixel = Vector3(*ponto_atual.vector)
 
@@ -197,7 +205,8 @@ def trace_img(scene: Scene):
             direction = Vector3(*(pixel.vector - origin.vector))
             direction.normalize()
             
-            color : Color = colorize(scene, origin, direction, ttl)
+            color = Color(0,0,0)
+            color.vector = colorize(scene, origin, direction, ttl, i, j)
             color.normalize()
             image[i, j] = np.clip(color.vector, 0, 1)
 
