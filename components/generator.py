@@ -66,7 +66,7 @@ def refract(object : Object, direction : Vector3, normal : Vector3):
     cos = np.dot(direction.vector, normal.vector)
 
     if cos < 0:
-        new_normal = -normal
+        new_normal = Vector3(*(-normal.vector))
         refract_idx = 1/object.get_refraction_idx()
         cos = -cos
     
@@ -79,7 +79,10 @@ def refract(object : Object, direction : Vector3, normal : Vector3):
     if var < 0:
         raise Exception("total internal reflection exeception")
     
-    return -(direction/refract_idx) - (sqrt(var) - cos/refract_idx)*new_normal
+    refract_dir = Vector3(0,0,0)
+    refract_dir.vector = -(direction.vector/refract_idx) - (sqrt(var) - cos/refract_idx)*new_normal.vector
+    
+    return refract_dir
 
 
 def colorize(scene : Scene, ray_origin : Point, ray_direction : Vector3, ttl : int, i, j):
@@ -139,7 +142,6 @@ def colorize(scene : Scene, ray_origin : Point, ray_direction : Vector3, ttl : i
         
         if ttl > 0:
             if (j == scene.width/2 and i == scene.height/3):
-                x = 1
                 color.vector *= 1
 
             reflected_ray_dir = Vector3(*(-ray_direction.vector))
