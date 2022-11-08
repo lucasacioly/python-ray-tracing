@@ -113,5 +113,5 @@ if __name__ == "__main__":
         print(light)
 
     img = gnt.trace_img(scene)
-    gnt.save_img('./outputs/glass2', img)
+    gnt.save_img('./outputs/glass2_3', img)
 

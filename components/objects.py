@@ -47,8 +47,12 @@ class Sphere(Object):
         if delta > 0:
             t1 = (-b + np.sqrt(delta)) / (2 * a)
             t2 = (-b - np.sqrt(delta)) / (2 * a)
-            if t1 > 0 and t2 > 0:
+            if t1 > 0.001 and t2 > 0.001:
                 return min(t1, t2)
+            elif t1 > 0.001 and t2 < 0.001:
+                return t1
+            elif t1 < 0.001 and t2 > 0.001:
+                return t2
         return None
     
     def get_normal(self, surface_point : np.array):

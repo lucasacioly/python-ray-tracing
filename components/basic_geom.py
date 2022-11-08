@@ -9,6 +9,7 @@ class Vector3:
     def normalize(self):
         self.vector = self.vector/np.linalg.norm(self.vector)
 
+    
 class Point(Vector3):
     pass
 
