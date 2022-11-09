@@ -63,7 +63,7 @@ def reflect(dir_to_light : Vector3, normal : Vector3):
 
 
 def refract(object : Object, direction : Vector3, normal : Vector3):
-    cos = np.dot(-direction.vector, normal.vector)/(np.linalg.norm(direction.vector)*np.linalg.norm(normal.vector))
+    cos = np.dot(direction.vector, normal.vector)/(np.linalg.norm(direction.vector)*np.linalg.norm(normal.vector))
 
     if cos < 0:
         new_normal = Vector3(*(-normal.vector))
@@ -147,10 +147,14 @@ def colorize(scene : Scene, ray_origin : Point, ray_direction : Vector3, ttl : i
                 color.vector *= 1
             if nearest_object.kind == 'triangle':
                 color.vector *= 1
+            #i = 88, j = 319
+            if(i == 88 and j == 319):
+                color.vector *= 1
 
             reflected_ray_dir = Vector3(*(-ray_direction.vector))
             reflect_dir = reflect(reflected_ray_dir, hit_normal)
             shift_reflect_intersect = Point(*(intersection + 1e-5 * reflect_dir.vector))
+            
 
             kt = nearest_object.get_kt()
             kr = nearest_object.get_kr()

@@ -70,7 +70,7 @@ def detect_object(object : dict):
                         object["exp"],
                         object["kr"],
                         object["kt"],
-                        object["index_of_refraction"])
+                        1/object["index_of_refraction"])
 
     if "sphere" in object:
         sphere = object["sphere"]
@@ -171,5 +171,5 @@ if __name__ == "__main__":
         print(light)
 
     img = gnt.trace_img(scene)
-    gnt.save_img('./outputs/newton', img)
+    gnt.save_img('./outputs/newton3', img)
 
