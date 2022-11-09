@@ -113,9 +113,5 @@ if __name__ == "__main__":
         print(light)
 
     img = gnt.trace_img(scene)
-<<<<<<< HEAD
-    gnt.save_img('./outputs/bubble2_6', img)
-=======
     gnt.save_img('./outputs/bubble2_4', img)
->>>>>>> c890277e00b98018c37882350a47540ae1ec595e
 
