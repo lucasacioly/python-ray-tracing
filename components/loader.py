@@ -29,6 +29,35 @@ def load_json(path : str):
 
     return info
 
+def load_json_V2(path : str):
+
+    with open(path, 'r') as f:
+        info = json.load(f)
+
+    try:
+        soft_shadows = info["soft_shadows"]
+    except:
+        soft_shadows = 0
+        
+    info = {
+        "width": info["h_res"],
+        "height": info["v_res"],
+        "cam_pixel_size": info["square_side"],
+        "cam_focus_dist": info["dist"],
+        "cam_eye": tuple(info["eye"]),
+        "cam_look_at": tuple(info["look_at"]),
+        "cam_up": tuple(info["up"]),
+        "bg_color": tuple(info["background_color"]),
+        "objects": info["objects"],
+        "ambient_light" : info["ambient_light"],
+        "lights": tuple(info["lights"]),
+        "max_depth": 0,
+        "soft_shadows" : soft_shadows,
+    }
+
+
+
+    return info
 
 def detect_object(object : dict):
     
@@ -41,7 +70,36 @@ def detect_object(object : dict):
                         object["exp"],
                         object["kr"],
                         object["kt"],
-                        1/object["index_of_refraction"])
+                        object["index_of_refraction"])
+
+    if "sphere" in object:
+        sphere = object["sphere"]
+        center = Point(*sphere["center"])
+        radius = sphere["radius"]
+        new_obj = objects.Sphere(center, radius, material)
+    elif "plane" in object:
+        plane = object["plane"]
+        point = Point(*plane["sample"])
+        normal = Vector3(*plane["normal"])
+        new_obj = objects.Plane(point, normal, material)
+    elif "triangle" in object:
+        triangle = object["triangle"]
+        p1 = Point(*triangle[0])
+        p2 = Point(*triangle[1])
+        p3 = Point(*triangle[2])
+        new_obj = objects.Triangle(p1, p2, p3, material)
+    
+    return new_obj
+
+def detect_object_V2(object : dict):
+    
+    new_obj = None
+
+    material = Material(Color(*object["color"]),
+                        object["ka"],
+                        object["kd"],
+                        object["ks"],
+                        object["exp"])
 
     if "sphere" in object:
         sphere = object["sphere"]
@@ -93,7 +151,7 @@ def build_scene(info : dict):
     return scene
 
 if __name__ == "__main__":
-    eclipse = load_json('./V3_inputs/bubble2.json')
+    eclipse = load_json('./V3_inputs/newton.json')
     print(eclipse)
 
     scene = build_scene(eclipse)
@@ -113,5 +171,5 @@ if __name__ == "__main__":
         print(light)
 
     img = gnt.trace_img(scene)
-    gnt.save_img('./outputs/bubble2_4', img)
+    gnt.save_img('./outputs/newton', img)
 

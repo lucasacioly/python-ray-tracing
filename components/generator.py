@@ -63,7 +63,7 @@ def reflect(dir_to_light : Vector3, normal : Vector3):
 
 
 def refract(object : Object, direction : Vector3, normal : Vector3):
-    cos = np.dot(direction.vector, normal.vector)/(np.linalg.norm(direction.vector)*np.linalg.norm(normal.vector))
+    cos = np.dot(-direction.vector, normal.vector)/(np.linalg.norm(direction.vector)*np.linalg.norm(normal.vector))
 
     if cos < 0:
         new_normal = Vector3(*(-normal.vector))
