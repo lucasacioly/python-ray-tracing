@@ -93,7 +93,7 @@ def build_scene(info : dict):
     return scene
 
 if __name__ == "__main__":
-    eclipse = load_json('./V3_inputs/glass2.json')
+    eclipse = load_json('./V3_inputs/bubble2.json')
     print(eclipse)
 
     scene = build_scene(eclipse)
@@ -113,5 +113,5 @@ if __name__ == "__main__":
         print(light)
 
     img = gnt.trace_img(scene)
-    gnt.save_img('./outputs/glass2_3', img)
+    gnt.save_img('./outputs/bubble2_6', img)
 
