@@ -41,7 +41,7 @@ def detect_object(object : dict):
                         object["exp"],
                         object["kr"],
                         object["kt"],
-                        object["index_of_refraction"])
+                        1/object["index_of_refraction"])
 
     if "sphere" in object:
         sphere = object["sphere"]
@@ -113,5 +113,9 @@ if __name__ == "__main__":
         print(light)
 
     img = gnt.trace_img(scene)
+<<<<<<< HEAD
     gnt.save_img('./outputs/bubble2_6', img)
+=======
+    gnt.save_img('./outputs/bubble2_4', img)
+>>>>>>> c890277e00b98018c37882350a47540ae1ec595e
 
