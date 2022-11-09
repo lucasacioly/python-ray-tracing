@@ -39,9 +39,10 @@ def detect_object(object : dict):
                         object["kd"],
                         object["ks"],
                         object["exp"],
-                        object["kr"],
-                        object["kt"],
-                        object["index_of_refraction"])
+                        ##object["kr"],
+                        #object["kt"],
+                        #object["index_of_refraction"]
+    )
 
     if "sphere" in object:
         sphere = object["sphere"]
@@ -93,7 +94,7 @@ def build_scene(info : dict):
     return scene
 
 if __name__ == "__main__":
-    eclipse = load_json('./V3_inputs/mirror1.json')
+    eclipse = load_json('./V2_inputs/snooker.json')
     print(eclipse)
 
     scene = build_scene(eclipse)
@@ -113,5 +114,5 @@ if __name__ == "__main__":
         print(light)
 
     img = gnt.trace_img(scene)
-    gnt.save_img('./outputs/mirror1_4', img)
+    gnt.save_img('./outputs/test3', img)
 
