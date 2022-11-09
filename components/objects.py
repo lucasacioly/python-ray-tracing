@@ -131,9 +131,9 @@ class Triangle(Object):
 
     def intersection(self, ray_origin : Point, ray_direction : Vector3):
         #T = (a*f - a*x0 + b*h - b*y0 + c*g - c*z0)/(-a*α - b*β - c*γ)
-        a = self.normal.vector[0]
-        b = self.normal.vector[1]
-        c = self.normal.vector[2]
+        a = abs(self.normal.vector[0])
+        b = abs(self.normal.vector[1])
+        c = abs(self.normal.vector[2])
         x0 = self.point.vector[0]
         y0 = self.point.vector[1]
         z0 = self.point.vector[2]
@@ -146,7 +146,7 @@ class Triangle(Object):
 
 
         T = float((a*f - a*x0 + b*h - b*y0 + c*g - c*z0)/(-a*alpha - b*beta - c*gama))
-        if(not np.isnan(T) and T > 0):#test if is the triangle plane
+        if(not np.isnan(T) and T > 0.001):#test if is the triangle plane
             #try to get the point where the rect intersects the plane
             P = (ray_direction.vector*T + ray_origin.vector)
             if self.min_x<=P[0]<=self.max_x and \
@@ -210,7 +210,7 @@ class Plane(Object):
 
         T = float((a*f - a*x0 + b*h - b*y0 + c*g - c*z0)/(-a*alpha - b*beta - c*gama))
 
-        if(not np.isnan(T) and T>0):
+        if(not np.isnan(T) and T>0.001):
             return T
         else:
             return None
