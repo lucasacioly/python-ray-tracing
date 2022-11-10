@@ -171,5 +171,5 @@ if __name__ == "__main__":
         print(light)
 
     img = gnt.trace_img(scene)
-    gnt.save_img('./outputs/newton3', img)
+    gnt.save_img('./outputs/newton', img)
 
