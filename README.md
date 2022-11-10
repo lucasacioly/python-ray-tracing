@@ -1,17 +1,9 @@
 # IF680 - Ray Tracing
 
 ## Dependencies:
-- Contourpy 1.0.6
-- Cycler 0.11.0
-- Fonttools 4.38.0
-- Kiwisolver 1.4.4
 - Matplotlib 3.6.2
 - Numpy 1.23.4
-- Packaging 21.3
-- Pillow 9.3.0
-- Pyparsing 3.0.9
-- Python-dateutil 2.8.2
-- Six 1.16.0
+
 
 ## Inputs:
 - The input files are in the V1_inputs, V2_inputs and V3_inputs folders.
