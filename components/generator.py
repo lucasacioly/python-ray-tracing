@@ -195,31 +195,37 @@ def trace_img(scene: Scene):
     for i in range(height-1):
         #get current y position
         ponto_atual.vector = ponto_inicial.vector - n_up.vector*i
-        color = Color(0,0,0)
         for j in range(width-1):
             ponto_atual.vector -=  n_side.vector           
             pixel = Vector3(*ponto_atual.vector)
 
+            # anti-aliasing
             n = 10
-            for aka in range(n):  #TENTA RODAR ISSO!!!    
-                side_s = random.random() + j
-                up_s = random.random() + i
+            color = Color(0,0,0)
+            for aka in range(n):  #TENTA RODAR ISSO!!! 
+
+                norm_up = Vector3(*n_up.vector)
+                norm_up.vector *= 1/2
+                norm_side = Vector3(*n_side.vector)
+                norm_side.vector *= 1/2
+
+                side_s = random.uniform(-1,1)
+                up_s = random.uniform(-1,1)
+
+                ponto_atual_trans = Vector3(*(ponto_atual.vector + norm_side.vector*side_s + norm_up.vector*up_s))
+                pixel = Vector3(*ponto_atual_trans.vector)
+
                 origin = Point(*cam_pos.vector)
-                #pixel é um objeto e n_side.vector*side_s + n_up.vector*up_s retorna vetores
-                #pixel += n_side.vector*side_s + n_up.vector*up_s
-                pixel = origin.vector + 0.1 * ((n_side.vector * side_s) - (n_up.vector * up_s))
-
-                #origin = Point(*cam_pos.vector)
-                direction = Vector3(*(pixel - origin.vector))
+                direction = Vector3(*(pixel.vector - origin.vector))
                 direction.normalize()
-
+                
                 color_buffer = Color(0,0,0)
                 color_buffer.vector = colorize(scene, origin, direction, ttl, i, j)
                 color_buffer.normalize()
+                
                 color.vector += color_buffer.vector
-
-            color.vector = color.vector/n
-            image[i, j] = np.clip(color.vector, 0, 1)
+                
+            image[i, j] = np.clip(color.vector/n, 0, 1)
 
                 
         print("progress: %d/%d" % (i + 1, height))
