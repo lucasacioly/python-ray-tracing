@@ -130,10 +130,15 @@ class Triangle(Object):
         return np.array((np.dot(from_a, to_b) / np.dot(to_b, to_b)) * to_b)
 
     def intersection(self, ray_origin : Point, ray_direction : Vector3):
-        #T = (a*f - a*x0 + b*h - b*y0 + c*g - c*z0)/(-a*α - b*β - c*γ)
-        a = abs(self.normal.vector[0])
-        b = abs(self.normal.vector[1])
-        c = abs(self.normal.vector[2])
+        #T = (a*f - a*x0 + b*h - b*y0 + c*g - c*z0)/(-a*α - b*β - c*γ
+        if(self.normal.vector[0]<0 and self.normal.vector[1]<0 and self.normal.vector[2]<0):
+            a = abs(self.normal.vector[0])
+            b = abs(self.normal.vector[1])
+            c = abs(self.normal.vector[2])
+        else:
+            a = self.normal.vector[0]
+            b = self.normal.vector[1]
+            c = self.normal.vector[2]
         x0 = self.point.vector[0]
         y0 = self.point.vector[1]
         z0 = self.point.vector[2]
