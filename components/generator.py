@@ -78,8 +78,7 @@ def refract(object : Object, direction : Vector3, normal : Vector3):
     var = 1 - ((1-cos**2)/refract_idx**2)
 
     if var < 0:
-        return -1
-        #raise Exception("total internal reflection exeception")
+        raise Exception("total internal reflection exeception")
     
     refract_dir = Vector3(0,0,0)
     refract_dir.vector = -(direction.vector/refract_idx) - (sqrt(var) - cos/refract_idx)*new_normal.vector
@@ -146,29 +145,32 @@ def colorize(scene : Scene, ray_origin : Point, ray_direction : Vector3, ttl : i
         if ttl > 0:
             if (j == scene.width/2 and i == scene.height/3):
                 color.vector *= 1
+            if nearest_object.kind == 'triangle':
+                color.vector *= 1
+            #i = 88, j = 319
+            if(i == 88 and j == 319):
+                color.vector *= 1
 
             reflected_ray_dir = Vector3(*(-ray_direction.vector))
             reflect_dir = reflect(reflected_ray_dir, hit_normal)
             shift_reflect_intersect = Point(*(intersection + 1e-5 * reflect_dir.vector))
+            
 
             kt = nearest_object.get_kt()
             kr = nearest_object.get_kr()
             
             new_ttl = ttl - 1
-            #try:
-            if kt > 0:
-                refract_dir = refract(nearest_object, ray_direction, hit_normal)
-                if refract_dir != -1:
+            try:
+                if kt > 0:
+                    refract_dir = refract(nearest_object, ray_direction, hit_normal)
                     shift_refract_intersect = Point(*(intersection + 1e-5 * refract_dir.vector))
                     refract_dir.vector = -refract_dir.vector/np.linalg.norm(reflect_dir.vector)
                     color.vector += kt*colorize(scene, shift_refract_intersect, refract_dir, new_ttl, i, j)
-                else:
-                    color.vector += colorize(scene, shift_reflect_intersect, reflect_dir, new_ttl, i, j)
 
-            if kr > 0 and reflect_dir != -1:
-                color.vector += kr*colorize(scene, shift_reflect_intersect, reflect_dir, new_ttl, i, j)
-            #except:
-                #color.vector += colorize(scene, shift_reflect_intersect, reflect_dir, new_ttl, i, j)
+                if kr > 0:
+                    color.vector += kr*colorize(scene, shift_reflect_intersect, reflect_dir, new_ttl, i, j)
+            except:
+                color.vector += colorize(scene, shift_reflect_intersect, reflect_dir, new_ttl, i, j)
                 
         return color.vector
 
